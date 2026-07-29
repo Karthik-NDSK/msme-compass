@@ -317,8 +317,6 @@ function TrackedCard({ item, notes, setNotes, editingNotes, setEditingNotes, onS
 
       <a
         href={scheme.applyUrl}
-        target="_blank"
-        rel="noopener noreferrer"
         className="btn-secondary w-full text-sm justify-center"
       >
         <ExternalLink size={14} strokeWidth={1.75} />Apply / View details

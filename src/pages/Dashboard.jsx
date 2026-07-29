@@ -481,8 +481,6 @@ function SchemeCard({ match, isTracked, onTrack }) {
 
         <a
           href={scheme.applyUrl}
-          target="_blank"
-          rel="noopener noreferrer"
           id={`apply-${match.schemeId}`}
           className="btn-ghost text-sm py-2 px-3"
         >
