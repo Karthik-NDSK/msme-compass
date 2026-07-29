@@ -46,8 +46,15 @@ export default function Onboarding() {
 
   function handleFile(f) {
     if (!f) return;
+    
+    // Diagnostic logging per user request
+    console.log(`[Upload] File Selected: ${f.name}`);
+    console.log(`[Upload] File Size: ${(f.size / 1024).toFixed(2)} KB`);
+    console.log(`[Upload] File Type: ${f.type}`);
+
     if (!f.type.match(/image\/(jpeg|png|webp)|application\/pdf/)) {
       setExtractError("Please upload a JPG, PNG, WEBP, or PDF file.");
+      console.warn(`[Upload] Rejected unsupported file type: ${f.type}`);
       return;
     }
     setFile(f);
@@ -59,6 +66,7 @@ export default function Onboarding() {
     setExtracting(true);
     setExtractError(null);
     try {
+      console.log(`[Upload] Starting extraction for ${f.name}...`);
       const result = await extractFromDocument(f);
       setForm({
         name: result.businessName !== "Unknown" ? result.businessName : "",
@@ -76,7 +84,7 @@ export default function Onboarding() {
         registrationNumber: result.registrationNumber !== "Unknown" ? result.registrationNumber : "",
       });
     } catch (err) {
-      setExtractError("Couldn't read the document. Please fill in details manually.");
+      setExtractError(err.message || "Couldn't read the document. Please fill in details manually.");
       console.error(err);
     } finally {
       setExtracting(false);
@@ -230,11 +238,24 @@ export default function Onboarding() {
           {/* Error */}
           {extractError && (
             <div
-              className="flex items-start gap-2 p-3 rounded-lg mb-4 text-sm"
+              className="flex flex-col gap-3 p-4 rounded-lg mb-4 text-sm"
               style={{ background: "#FEE2E2", color: "var(--color-danger)" }}
             >
-              <AlertCircle size={16} strokeWidth={1.75} className="mt-0.5 flex-shrink-0" />
-              <span>{extractError}</span>
+              <div className="flex items-start gap-2">
+                <AlertCircle size={16} strokeWidth={1.75} className="mt-0.5 flex-shrink-0" />
+                <span>{extractError}</span>
+              </div>
+              <button 
+                onClick={() => {
+                  setTab("manual");
+                  setFile(null);
+                  setExtractError(null);
+                }}
+                className="self-start text-xs font-semibold px-3 py-1.5 rounded-md"
+                style={{ background: "white", color: "var(--color-danger)", border: "1px solid var(--color-danger)" }}
+              >
+                Enter Details Manually Instead
+              </button>
             </div>
           )}
 

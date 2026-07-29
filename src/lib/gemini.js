@@ -11,9 +11,9 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
-// gemini-2.0-flash-lite: higher RPM on free tier, lower token cost
-const MODEL_VISION = "gemini-2.0-flash-lite";
-const MODEL_TEXT   = "gemini-2.0-flash-lite";
+// gemini-2.5-flash has active quota on this key and strong PDF support
+const MODEL_VISION = "gemini-2.5-flash";
+const MODEL_TEXT   = "gemini-2.5-flash";
 
 let genAI = null;
 if (API_KEY) {
@@ -52,18 +52,29 @@ export async function extractFromDocument(file) {
   const base64 = await fileToBase64(file);
   const mimeType = file.type || "image/jpeg";
 
+  console.log(`[Gemini OCR] Sending file to Gemini...`);
+  console.log(`[Gemini OCR] Target MIME Type: ${mimeType}`);
+  console.log(`[Gemini OCR] Base64 length: ${base64.length} chars`);
+
   if (!genAI) {
     console.warn("[Gemini] No API key — returning mock extraction");
     return getMockExtraction();
   }
 
   try {
-    const model = genAI.getGenerativeModel({ model: MODEL_VISION });
+    // gemini-2.0-flash handles complex PDFs much better than -lite
+    const model = genAI.getGenerativeModel({ 
+      model: MODEL_VISION,
+      generationConfig: {
+        responseMimeType: "application/json"
+      }
+    });
 
-    // Verbatim extraction prompt from PRD.md §7
-    const prompt = `You are extracting structured business data from an Indian MSME registration document (Udyam/GST certificate). Return ONLY valid JSON, no markdown fences, no preamble.
+    const prompt = `Analyze the attached Indian MSME registration document (which could be a PDF or image, such as an Udyam or GST certificate). Read all text and extract the following structured business data.
 
-Schema:
+CRITICAL INSTRUCTION: You must return ONLY a raw JSON object. Do not wrap it in markdown backticks (no \`\`\`json). Do not add any preamble or explanation.
+
+Schema to follow:
 {
   "businessName": string,
   "sector": string,
@@ -73,7 +84,7 @@ Schema:
   "registrationNumber": string
 }
 
-If a field cannot be determined from the document, use "Unknown".`;
+If a specific field cannot be determined from the document, use "Unknown". Extract the data precisely based on the document's contents.`;
 
     const result = await withRetry(() =>
       model.generateContent([
@@ -83,11 +94,13 @@ If a field cannot be determined from the document, use "Unknown".`;
     );
 
     const text = result.response.text().trim();
+    console.log("[Gemini] Raw OCR Response:", text); // Debug log
+
     const cleaned = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
     return JSON.parse(cleaned);
   } catch (err) {
-    console.error("[Gemini] OCR extraction failed:", err);
-    return getMockExtraction();
+    console.error("[Gemini] OCR extraction failed. Error:", err);
+    throw new Error(`OCR failed: ${err.message || "Unknown error"}`);
   }
 }
 
