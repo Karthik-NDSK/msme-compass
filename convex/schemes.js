@@ -82,7 +82,7 @@ function getSeedSchemes() {
       eligibility: {
         sectors: ["Manufacturing - General", "Manufacturing - Textiles", "Manufacturing - Auto Components", "Manufacturing - Electronics"],
         states: ["*"],
-        maxTurnover: null,
+        maxTurnover: undefined,
         registrationRequired: ["Udyam"],
       },
       benefit:
@@ -150,7 +150,7 @@ function getSeedSchemes() {
       eligibility: {
         sectors: ["*"],
         states: ["*"],
-        maxTurnover: null,
+        maxTurnover: undefined,
         registrationRequired: [],
       },
       benefit:
@@ -201,7 +201,7 @@ function getSeedSchemes() {
       eligibility: {
         sectors: ["*"],
         states: ["*"],
-        maxTurnover: null,
+        maxTurnover: undefined,
         registrationRequired: ["Udyam", "GST"],
       },
       benefit:
@@ -305,7 +305,7 @@ function getSeedSchemes() {
       eligibility: {
         sectors: ["Manufacturing - Textiles"],
         states: ["*"],
-        maxTurnover: null,
+        maxTurnover: undefined,
         registrationRequired: ["Udyam"],
       },
       benefit:
@@ -322,7 +322,7 @@ function getSeedSchemes() {
       eligibility: {
         sectors: ["Manufacturing - Food Processing", "Food & Beverages", "Agro-based Industries"],
         states: ["*"],
-        maxTurnover: null,
+        maxTurnover: undefined,
         registrationRequired: [],
       },
       benefit:
