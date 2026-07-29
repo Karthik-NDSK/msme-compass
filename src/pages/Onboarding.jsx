@@ -1,9 +1,9 @@
 import { useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Upload, FileText, X, ChevronRight, AlertCircle } from "lucide-react";
 import { extractFromDocument } from "../lib/gemini";
 import { SkeletonForm } from "../components/ui/Skeleton";
-import { useCreateBusiness, useSeedSchemes } from "../lib/backend";
+import { useCreateBusiness, useUpdateBusiness, useSeedSchemes } from "../lib/backend";
 import {
   SECTORS,
   STATES,
@@ -16,12 +16,17 @@ import {
 const REQUIRED = ["name", "sector", "state", "registrationType", "turnoverBand"];
 
 export default function Onboarding() {
+  const location = useLocation();
+  const isEdit = location.state?.edit;
+  const initialData = location.state?.business;
+
   const navigate = useNavigate();
   const createBusiness = useCreateBusiness();
+  const updateBusiness = useUpdateBusiness();
 
   const seedSchemes = useSeedSchemes();
 
-  const [tab, setTab] = useState("upload");
+  const [tab, setTab] = useState(isEdit ? "manual" : "upload");
   const [dragOver, setDragOver] = useState(false);
   const [file, setFile] = useState(null);
   const [extracting, setExtracting] = useState(false);
@@ -29,13 +34,13 @@ export default function Onboarding() {
   const [submitting, setSubmitting] = useState(false);
 
   const [form, setForm] = useState({
-    name: "",
-    sector: "",
-    state: "",
-    registrationType: "",
-    turnoverBand: "",
-    employeeCount: "",
-    registrationNumber: "",
+    name: initialData ? initialData.name : "",
+    sector: initialData ? initialData.sector : "",
+    state: initialData ? initialData.state : "",
+    registrationType: initialData ? initialData.registrationType : "",
+    turnoverBand: initialData ? initialData.turnoverBand : "",
+    employeeCount: initialData?.employeeCount || "",
+    registrationNumber: initialData?.registrationNumber || "",
   });
 
   const isFormValid = REQUIRED.every((f) => form[f]?.trim());
@@ -108,17 +113,24 @@ export default function Onboarding() {
       await seedSchemes();
 
       const user = getUser();
-      const businessId = await createBusiness({
-        userId: user.id,
+      const payload = {
         name: form.name.trim(),
         sector: form.sector,
         state: form.state,
         registrationType: form.registrationType,
         turnoverBand: form.turnoverBand,
         employeeCount: parseInt(form.employeeCount) || 0,
-        extractedFrom: file ? "ocr" : "manual",
+        extractedFrom: file ? "ocr" : (isEdit ? "manual_update" : "manual"),
         registrationNumber: form.registrationNumber.trim() || undefined,
-      });
+      };
+
+      let businessId;
+      if (isEdit && initialData?._id) {
+        businessId = initialData._id;
+        await updateBusiness({ id: businessId, ...payload });
+      } else {
+        businessId = await createBusiness({ userId: user.id, ...payload });
+      }
 
       setStoredBusiness({
         id: businessId,
@@ -129,9 +141,10 @@ export default function Onboarding() {
         turnoverBand: form.turnoverBand,
       });
 
-      navigate("/dashboard", { state: { businessId, isNew: true } });
+      navigate("/dashboard", { state: { businessId, isNew: !isEdit } });
     } catch (err) {
       console.error("Failed to save business:", err);
+      setExtractError(`Submit Error: ${err.message || "Could not save profile"}`);
       setSubmitting(false);
     }
   }
@@ -147,10 +160,12 @@ export default function Onboarding() {
             className="font-bold mb-2"
             style={{ fontSize: "var(--text-2xl)", color: "var(--color-ink)" }}
           >
-            Set up your business profile
+            {isEdit ? "Update Business Profile" : "Tell us about your business"}
           </h1>
-          <p style={{ color: "var(--color-ink-muted)" }}>
-            We'll use this to find the schemes you qualify for.
+          <p className="text-sm" style={{ color: "var(--color-ink-muted)" }}>
+            {isEdit 
+              ? "Update your details below to get the most accurate scheme matches."
+              : "We'll use this information to accurately match you with eligible schemes."}
           </p>
         </div>
 
@@ -383,19 +398,25 @@ export default function Onboarding() {
                 </div>
               </div>
 
-              <button
-                id="find-schemes-btn"
-                type="submit"
-                disabled={!isFormValid || submitting}
-                className="btn-primary w-full py-3 text-base mt-2"
-              >
-                {submitting ? "Saving…" : (
-                  <>
-                    Find my schemes
-                    <ChevronRight size={18} strokeWidth={1.75} />
-                  </>
+              <div className="flex flex-col sm:flex-row gap-3 mt-4">
+                {isEdit && (
+                  <button
+                    type="button"
+                    onClick={() => navigate("/profile")}
+                    className="btn-secondary w-full py-3 text-base"
+                  >
+                    Cancel
+                  </button>
                 )}
-              </button>
+                <button
+                  id="find-schemes-btn"
+                  type="submit"
+                  disabled={!isFormValid || submitting}
+                  className="btn-primary w-full py-3 text-base"
+                >
+                  {submitting ? (isEdit ? "Updating..." : "Saving...") : (isEdit ? "Update Profile" : "Save & Find Schemes")}
+                </button>
+              </div>
             </form>
           )}
         </div>

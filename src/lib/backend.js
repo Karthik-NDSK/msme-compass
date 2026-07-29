@@ -116,6 +116,15 @@ export function useCreateBusiness() {
   }, []);
 }
 
+export function useUpdateBusiness() {
+  if (IS_CONVEX) {
+    return useConvexMutation(api.businesses.update);
+  }
+  return useCallback((data) => {
+    return Promise.resolve(localBusinesses.update(data));
+  }, []);
+}
+
 export function useSeedSchemes() {
   if (IS_CONVEX) {
     return useConvexMutation(api.schemes.seed);

@@ -24,7 +24,7 @@ export default function Profile() {
           >
             Business Profile
           </h1>
-          <button className="btn-secondary text-sm" onClick={() => navigate("/onboarding")}>
+          <button className="btn-secondary text-sm" onClick={() => navigate("/onboarding", { state: { edit: true, business } })}>
             <Edit size={14} strokeWidth={1.75} />
             Update profile
           </button>

@@ -75,6 +75,17 @@ export const localBusinesses = {
     return biz._id;
   },
 
+  update(data) {
+    const businesses = getStore(KEYS.businesses);
+    const { id, ...updates } = data;
+    const index = businesses.findIndex((b) => b._id === id);
+    if (index !== -1) {
+      businesses[index] = { ...businesses[index], ...updates };
+      setStore(KEYS.businesses, businesses);
+    }
+    return id;
+  },
+
   listByUser(userId) {
     return getStore(KEYS.businesses).filter((b) => b.userId === userId);
   },

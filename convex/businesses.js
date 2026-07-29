@@ -23,6 +23,26 @@ export const create = mutation({
   },
 });
 
+// Update an existing business profile
+export const update = mutation({
+  args: {
+    id: v.id("businesses"),
+    name: v.string(),
+    sector: v.string(),
+    state: v.string(),
+    registrationType: v.string(),
+    turnoverBand: v.string(),
+    employeeCount: v.number(),
+    extractedFrom: v.string(),
+    registrationNumber: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const { id, ...rest } = args;
+    await ctx.db.patch(id, rest);
+    return id;
+  },
+});
+
 // Get business profiles for a user
 export const listByUser = query({
   args: { userId: v.string() },
