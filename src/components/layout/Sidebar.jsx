@@ -17,7 +17,7 @@ export default function Sidebar({ trackedCount = 0, onSignOut }) {
     <aside className="sidebar hidden lg:flex">
       {/* Logo */}
       <div
-        className="flex items-center gap-2.5 px-5 py-4 border-b cursor-pointer"
+        className="flex items-center gap-2.5 pl-6 pr-5 py-4 border-b cursor-pointer"
         style={{ borderColor: "var(--color-border)" }}
         onClick={() => navigate("/dashboard")}
       >
@@ -72,7 +72,7 @@ export default function Sidebar({ trackedCount = 0, onSignOut }) {
 
       {/* Business info + sign out */}
       <div
-        className="px-4 py-4 border-t"
+        className="pl-6 pr-4 py-4 border-t"
         style={{ borderColor: "var(--color-border)" }}
       >
         {business && (
