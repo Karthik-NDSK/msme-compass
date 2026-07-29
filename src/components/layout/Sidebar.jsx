@@ -8,15 +8,10 @@ const NAV_ITEMS = [
   { path: "/profile", icon: Building2, label: "Profile" },
 ];
 
-export default function Sidebar({ trackedCount = 0 }) {
+export default function Sidebar({ trackedCount = 0, onSignOut }) {
   const navigate = useNavigate();
   const location = useLocation();
   const business = getStoredBusiness();
-
-  function handleSignOut() {
-    clearUser();
-    navigate("/");
-  }
 
   return (
     <aside className="sidebar hidden lg:flex">
@@ -94,7 +89,7 @@ export default function Sidebar({ trackedCount = 0 }) {
           </div>
         )}
         <button
-          onClick={handleSignOut}
+          onClick={onSignOut}
           className="sidebar-nav-item w-full text-left"
           style={{ color: "var(--color-danger)" }}
         >

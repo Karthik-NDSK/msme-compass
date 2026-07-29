@@ -3,15 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { Compass, ChevronDown, LogOut } from "lucide-react";
 import { getStoredBusiness, clearUser } from "../../lib/utils";
 
-export default function TopBar() {
+export default function TopBar({ onSignOut }) {
   const navigate = useNavigate();
   const business = getStoredBusiness();
   const [menuOpen, setMenuOpen] = useState(false);
-
-  function handleSignOut() {
-    clearUser();
-    navigate("/");
-  }
 
   return (
     <header className="topbar">
@@ -106,7 +101,10 @@ export default function TopBar() {
               <button
                 className="w-full flex items-center gap-2 px-4 py-2.5 text-sm transition-colors"
                 style={{ color: "var(--color-danger)" }}
-                onClick={handleSignOut}
+                onClick={() => {
+                  setMenuOpen(false);
+                  onSignOut();
+                }}
                 onMouseOver={e => e.currentTarget.style.background = "var(--color-surface-alt)"}
                 onMouseOut={e => e.currentTarget.style.background = "transparent"}
               >
