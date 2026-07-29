@@ -105,7 +105,7 @@ function getSeedSchemes() {
       benefit:
         "Capital subsidy of 15% on institutional finance up to ₹1 crore for technology upgradation",
       deadline: undefined,
-      applyUrl: "https://msme.gov.in/credit-linked-capital-subsidy-scheme",
+      applyUrl: "https://my.msme.gov.in/MyMsme/Reg/COM_Clcss.aspx",
       category: "Subsidy",
     },
     {
@@ -139,7 +139,7 @@ function getSeedSchemes() {
       benefit:
         "Up to ₹15 lakh grant for idea-to-prototype stage; up to ₹1 crore for full incubation",
       deadline: days(60),
-      applyUrl: "https://msme.gov.in/msme-innovative-scheme",
+      applyUrl: "https://innovative.msme.gov.in/",
       category: "Funding",
     },
     {
@@ -260,7 +260,7 @@ function getSeedSchemes() {
       benefit:
         "Working capital loans at 4% interest; emergency credit guarantee of up to ₹50 lakh; access to KTPO market linkage",
       deadline: days(150),
-      applyUrl: "https://udyogmitra.karnataka.gov.in/",
+      applyUrl: "https://kum.karnataka.gov.in/",
       category: "Funding",
     },
     {
@@ -311,7 +311,7 @@ function getSeedSchemes() {
       benefit:
         "Capital subsidy of 15% on eligible machinery; additional 10% for powerloom units; interest reimbursement on term loans",
       deadline: undefined,
-      applyUrl: "https://tufs.gov.in/",
+      applyUrl: "https://atufs.texmin.gov.in/",
       category: "Subsidy",
     },
     {
@@ -328,7 +328,7 @@ function getSeedSchemes() {
       benefit:
         "Enables legal food business operation; basic registration at just ₹100/year; unlocks institutional buyer access and e-commerce food category listings",
       deadline: undefined,
-      applyUrl: "https://foscos.fssai.gov.in/",
+      applyUrl: "https://pmfme.mofpi.gov.in/",
       category: "Certification",
     },
     {

@@ -8,6 +8,7 @@
  */
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { computeBaseScore } from "./schemeFilter.js";
 
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
@@ -160,13 +161,16 @@ All ${filteredSchemes.length} items must be present in the response.`;
     const cleaned = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
     const parsed = JSON.parse(cleaned);
 
-    // Map back from idx to schemeId
-    return parsed.map((item) => {
-      const scheme = filteredSchemes[item.idx] || filteredSchemes[0];
+    // Map over the ORIGINAL filteredSchemes to ensure NO schemes are dropped
+    // even if Gemini truncates its output or decides to filter them.
+    return filteredSchemes.map((scheme, originalIndex) => {
+      // Find the corresponding reason by idx, or fallback to the first item if messed up
+      const aiResponse = parsed.find(item => item.idx === originalIndex);
+      
       return {
         schemeId: scheme._id,
-        matchScore: Math.min(100, Math.max(0, item.matchScore || 70)),
-        reason: item.reason || `${business.name} meets the core eligibility criteria for ${scheme.name}.`,
+        matchScore: aiResponse ? Math.min(100, Math.max(0, aiResponse.matchScore || 70)) : computeBaseScore(business, scheme),
+        reason: aiResponse?.reason || `${business.name} meets the core eligibility criteria for ${scheme.name}.`,
       };
     });
   } catch (err) {
