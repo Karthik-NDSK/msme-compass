@@ -33,11 +33,12 @@ export const track = mutation({
 export const updateStatus = mutation({
   args: {
     trackedId: v.id("tracked_schemes"),
-    status: v.string(),
+    status: v.optional(v.string()),
     notes: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const update = { status: args.status };
+    const update = {};
+    if (args.status !== undefined) update.status = args.status;
     if (args.notes !== undefined) update.notes = args.notes;
     await ctx.db.patch(args.trackedId, update);
   },
