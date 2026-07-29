@@ -11,9 +11,9 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
-// gemini-2.5-flash has active quota on this key and strong PDF support
-const MODEL_VISION = "gemini-2.5-flash";
-const MODEL_TEXT   = "gemini-2.5-flash";
+// Using generic alias since specific 2.x and 1.5 versions are restricted on this key
+const MODEL_VISION = "gemini-flash-latest";
+const MODEL_TEXT   = "gemini-flash-latest";
 
 let genAI = null;
 if (API_KEY) {
